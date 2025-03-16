@@ -32,7 +32,7 @@ namespace QuickTranslate.Services.Business
                 target = translationRequest.TargetLanguage, 
                 format = "text",
                 alternatives = 3,                  
-                api_key = "16a6654b-444e-488e-b577-2b05e53a87d2"
+                api_key = ""
             };
             var jsonData = JsonConvert.SerializeObject(requestBody);
 
