@@ -1,0 +1,28 @@
+[
+  {
+    "ContainingType": "QuickTranslate.Controllers.TranslatorController",
+    "Method": "AsyncTranslate",
+    "RelativePath": "Translator",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "translationRequest",
+        "Type": "QuickTranslate.Models.Request.TranslationRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.String",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  }
+]
