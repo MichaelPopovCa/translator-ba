@@ -1,9 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using QuickTranslate.Configurations;
+using QuickTranslate.Entities;
 using QuickTranslate.Enums;
 using QuickTranslate.Exceptions;
 using QuickTranslate.Models.Request;
 using QuickTranslate.Models.Response;
+using QuickTranslate.Repositories.DBContext;
 using System.Text.RegularExpressions;
 
 namespace QuickTranslate.Services.Validation
@@ -12,15 +15,15 @@ namespace QuickTranslate.Services.Validation
     {
         private readonly ILogger<ValidationService> _logger;
         private readonly TranslationAPI _translationAPI;
-        private readonly LanguageSupport _languageSupport;
+        private readonly AppDbContext _appDbContext;
         [GeneratedRegex(@"\b\w+\b")]
         private static partial Regex WordRegex();
 
-        public ValidationService(ILogger<ValidationService> logger, TranslationAPI translationAPI, LanguageSupport languageSupport)
+        public ValidationService(ILogger<ValidationService> logger, TranslationAPI translationAPI, AppDbContext appDbContext)
         {
             _logger = logger;
             _translationAPI = translationAPI;
-            _languageSupport = languageSupport;
+            _appDbContext = appDbContext;
         }
 
         public void ValidateTranslationRequest(TranslationRequest translationRequest)
@@ -29,16 +32,16 @@ namespace QuickTranslate.Services.Validation
             if (translatorType == 0 || !_translationAPI.Api.ContainsKey(translatorType.ToString())) {
                 throw new InvalidTranslationDataException($"The translatorType with number {translatorType}", TranslationErrorCode.InvalidTranslatorType);
             }
+
+            DbSet<Language> supportedLanguages =  _appDbContext.Languages;
+
             string sourceLanguage = translationRequest.SourceLanguage;
-            if (!StringIsValid(sourceLanguage) || !_languageSupport.Support.Contains(translationRequest.SourceLanguage))
-            {
-                throw new InvalidTranslationDataException($"The sourceLanguage {sourceLanguage} is not supported", TranslationErrorCode.InvalidTranslationRequestData);
-            }
+
+            ValidateLanguageCode(supportedLanguages, sourceLanguage);
+
             string targetLanguage = translationRequest.TargetLanguage;
-            if (!StringIsValid(targetLanguage) || !_languageSupport.Support.Contains(targetLanguage))
-            {
-                throw new InvalidTranslationDataException($"The targetLanguage {targetLanguage} is not supported", TranslationErrorCode.InvalidTranslationRequestData);
-            }
+            ValidateLanguageCode(supportedLanguages, targetLanguage);
+
             string sourceText = translationRequest.SourceText;
             if (!StringIsValid(sourceText) || !WordRegex().IsMatch(sourceText))
             {
@@ -74,6 +77,22 @@ namespace QuickTranslate.Services.Validation
                 throw new NoDataException($"No data from translator number  {translatorType}", TranslationErrorCode.InvalidTranslationResponseData);
             }
             return translatedText;
+        }
+
+        public void ValidateLanguageCode(DbSet<Language> supportedLanguages, string languageCode)
+        {
+            if (!StringIsValid(languageCode) || !supportedLanguages.Any(l => l.LanguageCode == languageCode))
+            {
+                throw new InvalidTranslationDataException($"The languageCode {languageCode} is not supported", TranslationErrorCode.InvalidTranslationRequestData);
+            }
+        }
+
+        public void ValidateLanguage(Language language)
+        {
+            if(!StringIsValid(language.LanguageCode) || !StringIsValid(language.LanguageName))
+            {
+                throw new InvalidTranslationDataException($"The language {language.LanguageCode} or {language.LanguageName} is not supported", TranslationErrorCode.InvalidTranslationRequestData);
+            }
         }
     }
 }

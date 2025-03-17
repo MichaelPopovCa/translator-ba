@@ -17,10 +17,28 @@ namespace QuickTranslate.Controllers
             _translatorService = translatorService;
         }
 
-        [HttpPost]
-        public async Task<String> AsyncTranslate([FromBody] TranslationRequest translationRequest)
+        [HttpPost("quick-translate")]
+        public async Task<string> AsyncTranslate([FromBody] TranslationRequest translationRequest)
         {
             return await _translatorService.AsyncTranslate(translationRequest);
+        }
+
+        [HttpGet("all-app-languages")]
+        public async Task<IEnumerable<string>> AsyncGetAllAppLanguages()
+        {
+            return await _translatorService.AsyncGetAllAppLanguages();
+        }
+
+        [HttpGet("supported-languages")]
+        public async Task<IEnumerable<string>> AsyncGetSupportedLanguages()
+        {
+            return await _translatorService.AsyncGetSupportedLanguages();
+        }
+
+        [HttpPost("add-language")]
+        public async Task<IEnumerable<string>> AsyncAddNewSupportedLanguage([FromQuery] string languageCode)
+        {
+            return await _translatorService.AsyncAddNewSupportedLanguage(languageCode);
         }
     }
 }

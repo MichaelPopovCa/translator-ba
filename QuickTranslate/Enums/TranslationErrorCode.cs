@@ -4,7 +4,7 @@
     {
         InvalidTranslatorType = 1001,    
         InvalidTranslationRequestData = 1002,
-        TranslationRequestTimeout = 1003,
-        InvalidTranslationResponseData = 1004
+        InvalidTranslationResponseData = 1003,
+        InvalidLanguageException = 1004
     }
 }

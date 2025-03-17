@@ -2,14 +2,10 @@
 
 namespace QuickTranslate.Exceptions
 {
-    public class InvalidTranslationDataException : Exception
+    public class InvalidTranslationDataException : TranslationException
     {
-        public TranslationErrorCode TranslationErrorCode { get; }
-
         public InvalidTranslationDataException(string message, TranslationErrorCode translationErrorCode)
-        : base(message)
-        {
-            TranslationErrorCode = translationErrorCode;
-        }
+        : base(message, translationErrorCode)
+        {}
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using QuickTranslate.Enums;
 using QuickTranslate.Exceptions;
 
 namespace QuickTranslate.Middlewares
@@ -52,8 +53,9 @@ namespace QuickTranslate.Middlewares
             { typeof(NotImplementedException), StatusCodes.Status501NotImplemented },
             { typeof(KeyNotFoundException), StatusCodes.Status404NotFound },
             { typeof(TimeoutException), StatusCodes.Status408RequestTimeout },
-            { typeof(InvalidTranslationDataException), StatusCodes.Status400BadRequest },
-            { typeof(NoDataException), StatusCodes.Status404NotFound }
+            { typeof(InvalidTranslationDataException), (int) TranslationErrorCode.InvalidTranslationRequestData },
+            { typeof(NoDataException), (int) TranslationErrorCode.InvalidTranslationResponseData },
+            { typeof(InvalidLanguageException), (int) TranslationErrorCode.InvalidLanguageException }
         };
 
             if (exceptionMapping.ContainsKey(ex.GetType()))
