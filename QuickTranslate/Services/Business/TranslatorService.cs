@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using QuickTranslate.Configurations;
 using QuickTranslate.Entities;
@@ -8,6 +9,7 @@ using QuickTranslate.Models.Request;
 using QuickTranslate.Models.Response;
 using QuickTranslate.Repositories.DBContext;
 using QuickTranslate.Services.Validation;
+using QuickTranslate.Socket;
 using System.Text;
 
 namespace QuickTranslate.Services.Business
@@ -19,30 +21,35 @@ namespace QuickTranslate.Services.Business
         private readonly TranslationAPI _translationAPI;
         private readonly HttpClient _httpClient;
         private readonly AppDbContext _appDbContext;
+        private readonly IHubContext<TranslationHub> _hubContext;
 
 
-        public TranslatorService(ILogger<TranslatorService> logger, IValidationService validationService, TranslationAPI translationAPI, HttpClient httpClient, AppDbContext appDbContext)
+
+        public TranslatorService(ILogger<TranslatorService> logger, IValidationService validationService, TranslationAPI translationAPI, HttpClient httpClient, AppDbContext appDbContext, IHubContext<TranslationHub> hubContext)
         {
             _logger = logger;
             _validationService = validationService;
             _translationAPI = translationAPI;
             _httpClient = httpClient;
             _appDbContext = appDbContext;
+            _hubContext = hubContext;
         }
 
         public async Task<string> TranslateAsync(TranslationRequest translationRequest)
         {
             _validationService.ValidateTranslationRequest(translationRequest);
+
             _translationAPI.Api.TryGetValue(translationRequest.TranslatorType.ToString(), out var apiValue);
             var requestBody = new
             {
-                q = translationRequest.SourceText, 
-                source = "auto",                   
-                target = translationRequest.TargetLanguage, 
+                q = translationRequest.SourceText,
+                source = translationRequest.SourceLanguage,
+                target = translationRequest.TargetLanguage,
                 format = "text",
-                alternatives = 3,                  
-                api_key = ""
+                alternatives = 3,
+                api_key = "" 
             };
+
             var jsonData = JsonConvert.SerializeObject(requestBody);
 
             var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
@@ -81,11 +88,10 @@ namespace QuickTranslate.Services.Business
                 throw new InvalidLanguageException($"The language with code {languageCode} is not available", TranslationErrorCode.InvalidLanguageException);
             }
 
-            if (existingLanguage.Enabled != enable)
-            {
-                existingLanguage.Enabled = enable;
-                await _appDbContext.SaveChangesAsync();
-            }
+         
+            existingLanguage.Enabled = enable;
+            await _appDbContext.SaveChangesAsync();
+           
 
             var languageResponses = await _appDbContext.Languages
                 .Select(l => new LanguageResponse

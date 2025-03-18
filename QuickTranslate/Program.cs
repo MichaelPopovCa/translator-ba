@@ -6,6 +6,7 @@ using QuickTranslate.Middlewares;
 using QuickTranslate.Repositories.DBContext;
 using QuickTranslate.Services.Business;
 using QuickTranslate.Services.Validation;
+using QuickTranslate.Socket;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,13 +35,16 @@ else if (environment == "Production")
     builder.Configuration.AddJsonFile("appsettings.Production.json", optional: true, reloadOnChange: true);
 }
 
+builder.Services.AddSignalR();
+
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost5173",
         builder => builder.WithOrigins("http://localhost:5173")
                           .AllowAnyHeader()
-                          .AllowAnyMethod());
+                          .AllowAnyMethod()
+                          .AllowCredentials());
 });
 
 var app = builder.Build();
@@ -48,6 +52,10 @@ var app = builder.Build();
 app.UseCors("AllowLocalhost5173");
 
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+
+app.UseRouting();
+
+app.MapHub<TranslationHub>("/translationHub");
 
 app.MapControllers();
 

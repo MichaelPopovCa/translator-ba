@@ -18,12 +18,6 @@ namespace QuickTranslate.Controllers
             _translatorService = translatorService;
         }
 
-        [HttpPost("quick-translate")]
-        public async Task<string> AsyncTranslate([FromBody] TranslationRequest translationRequest)
-        {
-            return await _translatorService.TranslateAsync(translationRequest);
-        }
-
         [HttpGet("all-app-languages")]
         public async Task<IEnumerable<LanguageResponse>> AsyncGetAllAppLanguages()
         {
