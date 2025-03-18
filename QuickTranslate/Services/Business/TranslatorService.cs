@@ -5,6 +5,7 @@ using QuickTranslate.Entities;
 using QuickTranslate.Enums;
 using QuickTranslate.Exceptions;
 using QuickTranslate.Models.Request;
+using QuickTranslate.Models.Response;
 using QuickTranslate.Repositories.DBContext;
 using QuickTranslate.Services.Validation;
 using System.Text;
@@ -29,7 +30,7 @@ namespace QuickTranslate.Services.Business
             _appDbContext = appDbContext;
         }
 
-        public async Task<string> AsyncTranslate(TranslationRequest translationRequest)
+        public async Task<string> TranslateAsync(TranslationRequest translationRequest)
         {
             _validationService.ValidateTranslationRequest(translationRequest);
             _translationAPI.Api.TryGetValue(translationRequest.TranslatorType.ToString(), out var apiValue);
@@ -53,27 +54,20 @@ namespace QuickTranslate.Services.Business
             return result;
         }
 
-        public async Task<IEnumerable<string>> AsyncGetSupportedLanguages()
-        {
-
-            return await _appDbContext.LanguageSupports
-                                .Join(_appDbContext.Languages,
-                                    ls => ls.ForeignKeyLanguageId,  
-                                    l => l.Id,                      
-                                    (ls, l) => l.LanguageCode)      
-                                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<string>> AsyncGetAllAppLanguages()
+        public async Task<IEnumerable<LanguageResponse>> GetAllAppLanguagesAsync()
         {
             return await _appDbContext.Languages
-                            .Select(l => l.LanguageCode)
+                            .Select(l => new LanguageResponse
+                            {
+                                LanguageCode = l.LanguageCode,
+                                LanguageName = l.LanguageName,
+                                Enabled = l.Enabled,
+                            })
                             .ToListAsync();
         }
 
-        public async Task<IEnumerable<string>> AsyncAddNewSupportedLanguage(string languageCode)
+        public async Task<IEnumerable<LanguageResponse>> UpdateLanguageConfigurationAsync(string languageCode, bool enable)
         {
-
             if (string.IsNullOrEmpty(languageCode))
             {
                 throw new InvalidLanguageException($"The languageCode {languageCode} is not valid", TranslationErrorCode.InvalidLanguageException);
@@ -87,36 +81,22 @@ namespace QuickTranslate.Services.Business
                 throw new InvalidLanguageException($"The language with code {languageCode} is not available", TranslationErrorCode.InvalidLanguageException);
             }
 
-            var languageSupport = await _appDbContext.LanguageSupports
-                .FirstOrDefaultAsync(ls => ls.ForeignKeyLanguageId == existingLanguage.Id);
-
-            if (languageSupport != null)
+            if (existingLanguage.Enabled != enable)
             {
-                throw new InvalidLanguageException($"The language with code {languageCode} already has support", TranslationErrorCode.InvalidLanguageException);
+                existingLanguage.Enabled = enable;
+                await _appDbContext.SaveChangesAsync();
             }
 
-            var newLanguageSupport = new LanguageSupport
-            {
-                ForeignKeyLanguageId = existingLanguage.Id
-            };
-
-            _appDbContext.LanguageSupports.Add(newLanguageSupport);
-            await _appDbContext.SaveChangesAsync();
-
-            Console.WriteLine($"Added new language support for language code: {languageCode}");
-
-            var supportedLanguages = await _appDbContext.LanguageSupports
-                .Select(ls => ls.ForeignKeyLanguageId)
+            var languageResponses = await _appDbContext.Languages
+                .Select(l => new LanguageResponse
+                {
+                    LanguageCode = l.LanguageCode,
+                    LanguageName = l.LanguageName,
+                    Enabled = l.Enabled
+                })
                 .ToListAsync();
 
-            var result = await _appDbContext.Languages
-                .Where(l => supportedLanguages.Contains(l.Id))
-                .Select(l => l.LanguageCode)
-                .ToListAsync();
-
-            Console.WriteLine("Current supported languages: " + string.Join(", ", result));
-
-            return result;
+            return languageResponses;
         }
     }
 }

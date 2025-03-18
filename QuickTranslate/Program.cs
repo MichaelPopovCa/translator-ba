@@ -35,8 +35,17 @@ else if (environment == "Production")
 }
 
 builder.Services.AddControllers();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost5173",
+        builder => builder.WithOrigins("http://localhost:5173")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod());
+});
 
 var app = builder.Build();
+
+app.UseCors("AllowLocalhost5173");
 
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
@@ -46,29 +55,28 @@ using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-    var english = new Language { LanguageCode = "en", LanguageName = "English" };
-    var french = new Language { LanguageCode = "fr", LanguageName = "French" };
-    context.Languages.AddRange(english, french);
-    context.SaveChanges(); 
+    var english = new Language { LanguageCode = "en", LanguageName = "English", Enabled = true };
+    var french = new Language { LanguageCode = "fr", LanguageName = "French", Enabled = true };
+    var spanish = new Language { LanguageCode = "es", LanguageName = "Spanish" };
+    var german = new Language { LanguageCode = "de", LanguageName = "German" };
+    var italian = new Language { LanguageCode = "it", LanguageName = "Italian" };
+    var portuguese = new Language { LanguageCode = "pt", LanguageName = "Portuguese" };
+    var dutch = new Language { LanguageCode = "nl", LanguageName = "Dutch" };
+    var russian = new Language { LanguageCode = "ru", LanguageName = "Russian" };
+    var chinese = new Language { LanguageCode = "zh", LanguageName = "Chinese" };
+    var japanese = new Language { LanguageCode = "ja", LanguageName = "Japanese" };
 
-    var englishSupport = new LanguageSupport { ForeignKeyLanguageId = english.Id, Language = english };
-    var frenchSupport = new LanguageSupport { ForeignKeyLanguageId = french.Id, Language = french };
-    context.LanguageSupports.AddRange(englishSupport, frenchSupport);
-    context.SaveChanges(); 
+    context.Languages.AddRange(english, french, spanish, german, italian, portuguese, dutch, russian,
+                                chinese, japanese);
+
+    context.SaveChanges();
 
     var languages = context.Languages.ToList();
-    var languageSupports = context.LanguageSupports.ToList();
 
     Console.WriteLine("Languages:");
     foreach (var language in languages)
     {
         Console.WriteLine($"Code: {language.LanguageCode}, Name: {language.LanguageName}");
-    }
-
-    Console.WriteLine("Language Supports:");
-    foreach (var support in languageSupports)
-    {
-        Console.WriteLine($"ForeignKey: {support.ForeignKeyLanguageId}, Language: {support.Language.LanguageName}");
     }
 }
 

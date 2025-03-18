@@ -1,8 +1,7 @@
-﻿namespace QuickTranslate.Entities
+﻿namespace QuickTranslate.Models.Response
 {
-    public class Language : ILanguage
+    public class LanguageResponse : ILanguageResponse
     {
-        public long Id { get; set; }
         public string LanguageCode { get; set; }
         public string LanguageName { get; set; }
         public bool Enabled { get; set; }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using QuickTranslate.Models.Request;
+using QuickTranslate.Models.Response;
 using QuickTranslate.Services.Business;
 
 namespace QuickTranslate.Controllers
@@ -20,25 +21,19 @@ namespace QuickTranslate.Controllers
         [HttpPost("quick-translate")]
         public async Task<string> AsyncTranslate([FromBody] TranslationRequest translationRequest)
         {
-            return await _translatorService.AsyncTranslate(translationRequest);
+            return await _translatorService.TranslateAsync(translationRequest);
         }
 
         [HttpGet("all-app-languages")]
-        public async Task<IEnumerable<string>> AsyncGetAllAppLanguages()
+        public async Task<IEnumerable<LanguageResponse>> AsyncGetAllAppLanguages()
         {
-            return await _translatorService.AsyncGetAllAppLanguages();
+            return await _translatorService.GetAllAppLanguagesAsync();
         }
 
-        [HttpGet("supported-languages")]
-        public async Task<IEnumerable<string>> AsyncGetSupportedLanguages()
+        [HttpGet("update-language-config")]
+        public async Task<IEnumerable<LanguageResponse>> UpdateLanguageConfigurationAsync([FromQuery] string languageCode, [FromQuery] bool enable)
         {
-            return await _translatorService.AsyncGetSupportedLanguages();
-        }
-
-        [HttpPost("add-language")]
-        public async Task<IEnumerable<string>> AsyncAddNewSupportedLanguage([FromQuery] string languageCode)
-        {
-            return await _translatorService.AsyncAddNewSupportedLanguage(languageCode);
+            return await _translatorService.UpdateLanguageConfigurationAsync(languageCode, enable);
         }
     }
 }
