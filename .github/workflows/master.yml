@@ -34,8 +34,10 @@ jobs:
              mkdir -p ~/back
              cd ~/back/
              git clone git@github.com:MichaelPopovCa/translator-ba.git
-             cd ~/back/translator-ba
+             cd translator-ba/QuickTranslate
              dotnet restore
-             dotnet build
-             nohup dotnet run &> ~/back/translator-ba/nohup.out &
+             nohup dotnet run --project QuickTranslate.csproj &
+             sleep 5
+             sudo netstat -tuln | grep 5268
+             curl http://localhost:5268/all-app-languages
           EOF
