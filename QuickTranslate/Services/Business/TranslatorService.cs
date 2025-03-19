@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using QuickTranslate.Configurations;
-using QuickTranslate.Entities;
 using QuickTranslate.Enums;
 using QuickTranslate.Exceptions;
 using QuickTranslate.Models.Request;
@@ -42,12 +41,12 @@ namespace QuickTranslate.Services.Business
             _translationAPI.Api.TryGetValue(translationRequest.TranslatorType.ToString(), out var apiValue);
             var requestBody = new
             {
-                q = translationRequest.SourceText,
+                q = ConvertToLowerCaseExceptFirst(translationRequest.SourceText),
                 source = translationRequest.SourceLanguage,
                 target = translationRequest.TargetLanguage,
                 format = "text",
                 alternatives = 3,
-                api_key = "" 
+                api_key = ""
             };
 
             var jsonData = JsonConvert.SerializeObject(requestBody);
@@ -57,6 +56,8 @@ namespace QuickTranslate.Services.Business
             HttpResponseMessage httpResponseMessage = await _httpClient.PostAsync(apiValue, content);
 
             string result = await _validationService.ValidateTranslatedTextResponse(translationRequest.TranslatorType, httpResponseMessage);
+
+            Console.WriteLine(result);
 
             return result;
         }
@@ -103,6 +104,24 @@ namespace QuickTranslate.Services.Business
                 .ToListAsync();
 
             return languageResponses;
+        }
+
+        public string ConvertToLowerCaseExceptFirst(string input)
+        {
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                throw new InvalidTranslationDataException($"The text is null or empty", TranslationErrorCode.InvalidTranslationRequestData);
+            }
+            var words = input.Split(' ');
+
+            for (int i = 0; i < words.Length; i++)
+            {
+                if (i > 0)
+                {
+                    words[i] = words[i].ToLower();
+                }
+            }
+            return string.Join(" ", words);
         }
     }
 }

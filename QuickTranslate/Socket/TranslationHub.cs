@@ -13,15 +13,8 @@ namespace QuickTranslate.Socket
             _translatorService = translatorService;
         }
 
-        public async Task ReceiveTextForTranslation(int translatorType, string sourceText, string sourceLanguage, string targetLanguage)
+        public async Task ReceiveTextForTranslation(TranslationRequest translationRequest)
         {
-            var translationRequest = new TranslationRequest
-            {
-                TranslatorType = translatorType,
-                SourceText = sourceText,
-                SourceLanguage = sourceLanguage,
-                TargetLanguage = targetLanguage
-            };
             string translatedText = await _translatorService.TranslateAsync(translationRequest);
             await Clients.Caller.SendAsync("ReceiveTranslatedText", translatedText);
         }

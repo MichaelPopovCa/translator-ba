@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using QuickTranslate.Models.Request;
 using QuickTranslate.Models.Response;
 using QuickTranslate.Services.Business;
 
