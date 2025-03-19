@@ -25,7 +25,7 @@ jobs:
 
       - name: connect and output message
         run: |
-          ssh -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          ssh -T -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
              rm -rf ~/.ssh/id_ed25519
              echo "${{ secrets.SSH_VPS_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
              chmod 600 ~/.ssh/id_ed25519
