@@ -9,6 +9,6 @@ namespace QuickTranslate.Services.Business
         Task<string> TranslateAsync(TranslationRequest translator);
         Task<IEnumerable<LanguageResponse>> UpdateLanguageConfigurationAsync(string languageCode, bool enable);
         Task<IEnumerable<LanguageResponse>> GetAllAppLanguagesAsync();
-        private string ConvertToLowerCaseExceptFirst(string input);
+        string ConvertToLowerCaseExceptFirst(string input);
     }
 }
