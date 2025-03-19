@@ -31,5 +31,5 @@ jobs:
              chmod 700 ~/.ssh/id_ed25519
              mkdir -p ~/back
              cd ~/back/
-             git@github.com:MichaelPopovCa/translator-ba.git
+             git clone git@github.com:MichaelPopovCa/translator-ba.git
           EOF
