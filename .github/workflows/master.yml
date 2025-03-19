@@ -30,9 +30,5 @@ jobs:
              echo "${{ secrets.SSH_VPS_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
              chmod 700 ~/.ssh/id_ed25519
              cd ~/back/
-             git clone git@github.com:MichaelPopovCa/mikhailpopov-ba.git
-             cd mikhailpopov-ba/
-             cd mikhailpopov-ba/
-             mvn clean install
-             mvn spring-boot:run
+             git@github.com:MichaelPopovCa/translator-ba.git
           EOF
