@@ -41,7 +41,7 @@ builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowLocalhost5173",
-        builder => builder.WithOrigins("http://localhost:5173")
+        builder => builder.WithOrigins("http://localhost:5173", "https://focuslingvo.com")
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials());
