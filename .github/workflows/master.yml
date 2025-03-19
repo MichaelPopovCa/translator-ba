@@ -26,10 +26,16 @@ jobs:
       - name: connect and output message
         run: |
           ssh -T -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+             pkill -f "dotnet run"
+             rm -rf ~/back/*
              rm -rf ~/.ssh/id_ed25519
              echo "${{ secrets.SSH_VPS_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
              chmod 700 ~/.ssh/id_ed25519
              mkdir -p ~/back
              cd ~/back/
              git clone git@github.com:MichaelPopovCa/translator-ba.git
+             cd ~/back/translator-ba
+             dotnet restore
+             dotnet build
+             nohup dotnet run &> ~/back/translator-ba/nohup.out &
           EOF
