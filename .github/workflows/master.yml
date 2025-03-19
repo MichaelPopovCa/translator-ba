@@ -38,6 +38,5 @@ jobs:
              dotnet restore
              nohup dotnet run --project QuickTranslate.csproj &
              sleep 5
-             sudo netstat -tuln | grep 5268
-             curl http://localhost:5268/all-app-languages
+             exit
           EOF
