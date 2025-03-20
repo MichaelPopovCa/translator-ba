@@ -27,8 +27,6 @@ namespace QuickTranslate.Services.Vendor
 
         public async Task<string> TranslateText(TranslationRequest translationRequest)
         {
-            _translationAPI.Value.Api.TryGetValue(translationRequest.TranslatorType.ToString(), out var apiValue);
-
             var requestBody = new
             {
                 q = _textService.ConvertToLowerCaseExceptFirst(translationRequest.SourceText),
@@ -43,7 +41,7 @@ namespace QuickTranslate.Services.Vendor
 
             var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage httpResponseMessage = await _httpClient.PostAsync(apiValue, content);
+            HttpResponseMessage httpResponseMessage = await _httpClient.PostAsync(_translationAPI.Value.Api.First().Value, content);
 
             return await _validationService.ValidateTranslatedTextResponse(translationRequest.TranslatorType, httpResponseMessage);
         }
