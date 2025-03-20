@@ -49,13 +49,11 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-app.MapControllers();
+app.UseRouting();
 
 app.UseCors("AllowLocalhost5173");
 
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
-
-app.UseRouting();
 
 app.MapHub<TranslationHub>("/translationHub");
 
