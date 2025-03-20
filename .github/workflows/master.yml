@@ -35,8 +35,7 @@ jobs:
              cd ~/back/
              git clone git@github.com:MichaelPopovCa/translator-ba.git
              cd translator-ba/QuickTranslate
-             sed -i 's/API_KEY_VENDOR_ONE/${{ secrets.API_KEY_VENDOR_ONE }}/g' appsettings.Development.json
-             sed -i 's/API_KEY_VENDOR_ONE/${{ secrets.API_KEY_VENDOR_ONE }}/g' appsettings.Production.json
+             sed -i 's/API_KEY_VENDOR_ONE/${{ secrets.API_KEY_VENDOR_ONE }}/g' appsettings.json
              dotnet restore
              nohup dotnet run --project QuickTranslate.csproj &
              sleep 5

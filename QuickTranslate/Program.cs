@@ -26,16 +26,6 @@ builder.Services.AddHttpClient();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("QuickTranslateDB"));
 
 
-if (environment == "Development")
-{
-    builder.Configuration.AddJsonFile("appsettings.Development.json", optional: true, reloadOnChange: true);
-
-}
-else if (environment == "Production")
-{
-    builder.Configuration.AddJsonFile("appsettings.Production.json", optional: true, reloadOnChange: true);
-}
-
 builder.Services.AddSignalR();
 
 builder.Services.AddControllers();
