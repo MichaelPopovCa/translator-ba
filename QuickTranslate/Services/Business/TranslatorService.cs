@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using QuickTranslate.Configurations;
 using QuickTranslate.Enums;
@@ -17,14 +18,15 @@ namespace QuickTranslate.Services.Business
     {
         private readonly ILogger<TranslatorService> _logger;
         private readonly IValidationService _validationService;
-        private readonly TranslationAPI _translationAPI;
+        private readonly IOptions<TranslationAPI> _translationAPI;
         private readonly HttpClient _httpClient;
         private readonly AppDbContext _appDbContext;
         private readonly IHubContext<TranslationHub> _hubContext;
+        private readonly IOptions<TranslationVendorSecret> _translationVendorSecret;
 
 
 
-        public TranslatorService(ILogger<TranslatorService> logger, IValidationService validationService, TranslationAPI translationAPI, HttpClient httpClient, AppDbContext appDbContext, IHubContext<TranslationHub> hubContext)
+        public TranslatorService(ILogger<TranslatorService> logger, IValidationService validationService, IOptions<TranslationAPI> translationAPI, HttpClient httpClient, AppDbContext appDbContext, IHubContext<TranslationHub> hubContext, IOptions<TranslationVendorSecret> translationVendorSecret)
         {
             _logger = logger;
             _validationService = validationService;
@@ -32,13 +34,15 @@ namespace QuickTranslate.Services.Business
             _httpClient = httpClient;
             _appDbContext = appDbContext;
             _hubContext = hubContext;
+            _translationVendorSecret = translationVendorSecret;
         }
 
         public async Task<string> TranslateAsync(TranslationRequest translationRequest)
         {
             _validationService.ValidateTranslationRequest(translationRequest);
 
-            _translationAPI.Api.TryGetValue(translationRequest.TranslatorType.ToString(), out var apiValue);
+            _translationAPI.Value.Api.TryGetValue(translationRequest.TranslatorType.ToString(), out var apiValue);
+
             var requestBody = new
             {
                 q = ConvertToLowerCaseExceptFirst(translationRequest.SourceText),
@@ -46,7 +50,7 @@ namespace QuickTranslate.Services.Business
                 target = translationRequest.TargetLanguage,
                 format = "text",
                 alternatives = 3,
-                api_key = ""
+                api_key = _translationVendorSecret.Value.Api.First().Value,
             };
 
             var jsonData = JsonConvert.SerializeObject(requestBody);

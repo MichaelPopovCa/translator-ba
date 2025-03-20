@@ -17,6 +17,7 @@ builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 builder.Services.Configure<TranslationAPI>(builder.Configuration.GetSection("translation"));
+builder.Services.Configure<TranslationVendorSecret>(builder.Configuration.GetSection("secret"));
 builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<TranslationAPI>>().Value);
 builder.Services.AddScoped<IValidationService, ValidationService>();
 builder.Services.AddScoped<ITranslatorService, TranslatorService>();
