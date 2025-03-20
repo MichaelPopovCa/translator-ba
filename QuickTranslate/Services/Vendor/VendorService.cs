@@ -41,6 +41,10 @@ namespace QuickTranslate.Services.Vendor
 
             var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
 
+            Console.WriteLine(1111111111111111111111111111111);
+
+            Console.WriteLine(_translationAPI.Value.Api.First().Value);
+
             HttpResponseMessage httpResponseMessage = await _httpClient.PostAsync(_translationAPI.Value.Api.First().Value, content);
 
             return await _validationService.ValidateTranslatedTextResponse(translationRequest.TranslatorType, httpResponseMessage);
