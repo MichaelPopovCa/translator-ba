@@ -31,6 +31,8 @@ builder.Services.AddHttpClient();
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("QuickTranslateDB"));
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
 builder.Services.AddSignalR();
 
