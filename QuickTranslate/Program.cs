@@ -40,7 +40,7 @@ builder.Services.AddSignalR();
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocalhost5173",
+    options.AddPolicy("AllowSpecificOrigins",
         builder => builder.WithOrigins("http://localhost:5173", "https://focuslingvo.com")
                           .AllowAnyHeader()
                           .AllowAnyMethod()
@@ -51,7 +51,7 @@ var app = builder.Build();
 
 app.UseRouting();
 
-app.UseCors("AllowLocalhost5173");
+app.UseCors("AllowSpecificOrigins");
 
 app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
