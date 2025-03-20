@@ -4,8 +4,11 @@ using QuickTranslate.Configurations;
 using QuickTranslate.Entities;
 using QuickTranslate.Middlewares;
 using QuickTranslate.Repositories.DBContext;
+using QuickTranslate.Repositories.LanguageRepository;
 using QuickTranslate.Services.Business;
+using QuickTranslate.Services.Tool;
 using QuickTranslate.Services.Validation;
+using QuickTranslate.Services.Vendor;
 using QuickTranslate.Socket;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +24,9 @@ builder.Services.Configure<TranslationVendorSecret>(builder.Configuration.GetSec
 builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<TranslationAPI>>().Value);
 builder.Services.AddScoped<IValidationService, ValidationService>();
 builder.Services.AddScoped<ITranslatorService, TranslatorService>();
+builder.Services.AddScoped<ILanguageRepository, LanguageRepository>();
+builder.Services.AddScoped<IVendorService, VendorService>();
+builder.Services.AddScoped<ITextService, TextService>();
 builder.Services.AddHttpClient();
 
 builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("QuickTranslateDB"));

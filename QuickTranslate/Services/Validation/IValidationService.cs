@@ -9,9 +9,7 @@ namespace QuickTranslate.Services.Validation
         void ValidateTranslationRequest(TranslationRequest translationRequest);
         Task<string> ValidateTranslatedTextResponse(int translatorType, HttpResponseMessage httpResponseMessage);
         bool StringIsValid(string value);
-
         void ValidateLanguage(Language language);
-
         void ValidateLanguageCode(DbSet<Language> supportedLanguages, string languageCode);
     }
 }

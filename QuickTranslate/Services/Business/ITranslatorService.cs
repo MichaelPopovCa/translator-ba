@@ -1,5 +1,4 @@
-﻿using QuickTranslate.Entities;
-using QuickTranslate.Models.Request;
+﻿using QuickTranslate.Models.Request;
 using QuickTranslate.Models.Response;
 
 namespace QuickTranslate.Services.Business
@@ -9,6 +8,5 @@ namespace QuickTranslate.Services.Business
         Task<string> TranslateAsync(TranslationRequest translator);
         Task<IEnumerable<LanguageResponse>> UpdateLanguageConfigurationAsync(string languageCode, bool enable);
         Task<IEnumerable<LanguageResponse>> GetAllAppLanguagesAsync();
-        string ConvertToLowerCaseExceptFirst(string input);
     }
 }
