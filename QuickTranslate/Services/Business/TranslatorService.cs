@@ -25,10 +25,11 @@ namespace QuickTranslate.Services.Business
 
         public async Task<string> TranslateAsync(TranslationRequest translationRequest)
         {
+            _logger.LogInformation($"TranslatorService => TranslateAsync with source language {translationRequest.SourceLanguage} and target language {translationRequest.TargetLanguage} started");
             _validationService.ValidateTranslationRequest(translationRequest);
 
             string result = await _vendorService.TranslateText(translationRequest);
-
+            _logger.LogInformation($"TranslatorService => TranslateAsync with result {result} finished");
             return result;
         }
 
@@ -39,6 +40,8 @@ namespace QuickTranslate.Services.Business
 
         public async Task<IEnumerable<LanguageResponse>> UpdateLanguageConfigurationAsync(string languageCode, bool enable)
         {
+            _logger.LogInformation($"TranslatorService => UpdateLanguageConfigurationAsync with languageCode {languageCode} and config {enable} started");
+
             if (string.IsNullOrEmpty(languageCode))
             {
                 throw new InvalidLanguageException($"The languageCode {languageCode} is not valid", TranslationErrorCode.InvalidLanguageException);
@@ -46,7 +49,11 @@ namespace QuickTranslate.Services.Business
 
             await _languageRepository.FindLanguageByLanguageCodeAndUpdate(languageCode, enable);
 
-            return await _languageRepository.GetAllAppLanguagesAsync();
+            IEnumerable<LanguageResponse> result = await _languageRepository.GetAllAppLanguagesAsync();
+
+            _logger.LogInformation($"TranslatorService => UpdateLanguageConfigurationAsync finished");
+
+            return result;
         }
     }
 }

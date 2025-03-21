@@ -28,14 +28,10 @@ builder.Services.AddScoped<ILanguageRepository, LanguageRepository>();
 builder.Services.AddScoped<IVendorService, VendorService>();
 builder.Services.AddScoped<ITextService, TextService>();
 builder.Services.AddHttpClient();
-
 builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("QuickTranslateDB"));
-
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
-
 builder.Services.AddSignalR();
-
 builder.Services.AddControllers();
 builder.Services.AddCors(options =>
 {
@@ -77,14 +73,6 @@ using (var scope = app.Services.CreateScope())
                                 chinese, japanese);
 
     context.SaveChanges();
-
-    var languages = context.Languages.ToList();
-
-    Console.WriteLine("Languages:");
-    foreach (var language in languages)
-    {
-        Console.WriteLine($"Code: {language.LanguageCode}, Name: {language.LanguageName}");
-    }
 }
 
 app.Run();
